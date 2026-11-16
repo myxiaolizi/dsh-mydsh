@@ -8,22 +8,25 @@ agent/scratch/
 dist/
 *.tsbuildinfo
 
-# Local settings and user data
+# Local settings and user data.
+# These are anchored to the repository root and the two data directories the
+# plugin writes at runtime, because an unanchored `images/` also matches the
+# source directory `host/modules/images/` and silently drops it from a commit.
+/.env
+/.env.*
+!/.env.example
+/settings.json
+/notices.jsonl
+/data/
+/backups/
+/restore/
+/screenshots/
+/generated-images/
+
+# Editor and OS noise
 .DS_Store
 Thumbs.db
 *.log
-.env
-.env.*
-!.env.example
-settings.json
-notices.jsonl
-backups/
-restore/
-screenshots/
-images/
-data/
-
-# Editor and OS noise
 .vscode/
 .idea/
 *.swp
