@@ -1,0 +1,55 @@
+{
+  "name": "dsh-mydsh",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Interface switches, token usage and budgeting, backups, retry policy, personalization, self-contained capability modules and relay-based remote access for DeepSeek Harness — one plugin, no other plugin required.",
+  "keywords": [
+    "deepseek-harness",
+    "dsh-plugin",
+    "usage",
+    "backup",
+    "retry",
+    "personalize",
+    "mcp",
+    "remote-access"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "host",
+    "bin",
+    "locale/*.json",
+    "docs",
+    "icon.svg",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node scripts/build-client.mjs",
+    "test": "node tests/run.mjs"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-ui-sidebar"
+      ]
+    }
+  }
+}

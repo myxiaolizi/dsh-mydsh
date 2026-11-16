@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="300" viewBox="0 0 640 300" role="img" aria-label="My DSH usage page: statistic tiles above a bar chart">
+  <!--
+    One main illustration of the usage tab: the KPI tiles and the trend chart
+    are the page's most recognisable shape. Text-free so a single image serves
+    every locale, and drawn with neutral greys plus one brand accent so it stays
+    readable in both themes.
+  -->
+  <rect x="0" y="0" width="640" height="300" rx="14" fill="#f6f7f9"/>
+  <rect x="28" y="30" width="584" height="240" rx="12" fill="#ffffff" stroke="#dcdfe6"/>
+
+  <!-- tab strip -->
+  <g fill="#eceef2">
+    <rect x="48" y="48" width="62" height="20" rx="6"/>
+    <rect x="118" y="48" width="62" height="20" rx="6"/>
+    <rect x="188" y="48" width="52" height="20" rx="6"/>
+    <rect x="248" y="48" width="62" height="20" rx="6"/>
+    <rect x="318" y="48" width="76" height="20" rx="6"/>
+  </g>
+  <rect x="48" y="48" width="62" height="20" rx="6" fill="#2f6fed" opacity="0.16"/>
+  <rect x="52" y="55" width="54" height="6" rx="3" fill="#2f6fed"/>
+
+  <!-- statistic tiles -->
+  <g>
+    <rect x="48" y="86" width="104" height="52" rx="8" fill="#f3f5f9" stroke="#e2e6ee"/>
+    <rect x="60" y="98" width="52" height="9" rx="4" fill="#33405a"/>
+    <rect x="60" y="114" width="34" height="6" rx="3" fill="#9aa4b8"/>
+
+    <rect x="164" y="86" width="104" height="52" rx="8" fill="#f3f5f9" stroke="#e2e6ee"/>
+    <rect x="176" y="98" width="42" height="9" rx="4" fill="#33405a"/>
+    <rect x="176" y="114" width="30" height="6" rx="3" fill="#9aa4b8"/>
+
+    <rect x="280" y="86" width="104" height="52" rx="8" fill="#f3f5f9" stroke="#e2e6ee"/>
+    <rect x="292" y="98" width="46" height="9" rx="4" fill="#33405a"/>
+    <rect x="292" y="114" width="26" height="6" rx="3" fill="#9aa4b8"/>
+
+    <rect x="396" y="86" width="104" height="52" rx="8" fill="#f3f5f9" stroke="#e2e6ee"/>
+    <rect x="408" y="98" width="38" height="9" rx="4" fill="#33405a"/>
+    <rect x="408" y="114" width="32" height="6" rx="3" fill="#9aa4b8"/>
+
+    <rect x="512" y="86" width="80" height="52" rx="8" fill="#f3f5f9" stroke="#e2e6ee"/>
+    <rect x="524" y="98" width="34" height="9" rx="4" fill="#2f6fed"/>
+    <rect x="524" y="114" width="26" height="6" rx="3" fill="#9aa4b8"/>
+  </g>
+
+  <!-- trend chart -->
+  <rect x="48" y="154" width="544" height="96" rx="8" fill="#fbfcfe" stroke="#e2e6ee"/>
+  <g fill="#2f6fed">
+    <rect x="66" y="214" width="24" height="26" rx="3" opacity="0.55"/>
+    <rect x="102" y="200" width="24" height="40" rx="3" opacity="0.6"/>
+    <rect x="138" y="186" width="24" height="54" rx="3" opacity="0.68"/>
+    <rect x="174" y="196" width="24" height="44" rx="3" opacity="0.6"/>
+    <rect x="210" y="172" width="24" height="68" rx="3" opacity="0.78"/>
+    <rect x="246" y="182" width="24" height="58" rx="3" opacity="0.7"/>
+    <rect x="282" y="164" width="24" height="76" rx="3" opacity="0.86"/>
+    <rect x="318" y="190" width="24" height="50" rx="3" opacity="0.64"/>
+    <rect x="354" y="158" width="24" height="82" rx="3" opacity="0.92"/>
+    <rect x="390" y="176" width="24" height="64" rx="3" opacity="0.76"/>
+    <rect x="426" y="166" width="24" height="74" rx="3" opacity="0.84"/>
+    <rect x="462" y="188" width="24" height="52" rx="3" opacity="0.66"/>
+    <rect x="498" y="194" width="24" height="46" rx="3" opacity="0.6"/>
+    <rect x="534" y="206" width="24" height="34" rx="3" opacity="0.56"/>
+  </g>
+  <path d="M66 214 L102 200 L138 186 L174 196 L210 172 L246 182 L282 164 L318 190 L354 158 L390 176 L426 166 L462 188 L498 194 L534 206"
+        fill="none" stroke="#2f6fed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+</svg>

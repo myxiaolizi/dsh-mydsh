@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" role="img" aria-label="My DSH">
+  <!--
+    A gauge with three slider tracks: the plugin is a control panel for the
+    harness. One dominant subject, flat fills, no background tile, so the icon
+    sits beside neighbouring plugin icons at row size.
+  -->
+  <g fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round">
+    <path d="M8.6 21.4a9.4 9.4 0 0 1 18.8 0" opacity="0.45"/>
+  </g>
+  <path d="M25.1 17.6 19.3 21.9" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="18" cy="21.9" r="2.3" fill="currentColor"/>
+  <g stroke="currentColor" stroke-width="1.9" stroke-linecap="round" opacity="0.9">
+    <path d="M9.5 26.4h9.2"/>
+    <path d="M17.2 26.4h9.3"/>
+  </g>
+  <circle cx="15" cy="26.4" r="1.55" fill="currentColor"/>
+  <circle cx="21.4" cy="26.4" r="1.55" fill="currentColor"/>
+  <g stroke="currentColor" stroke-width="1.9" stroke-linecap="round" opacity="0.55">
+    <path d="M9.5 30.6h4.1"/>
+    <path d="M18.3 30.6h8.2"/>
+  </g>
+  <circle cx="16.6" cy="30.6" r="1.4" fill="currentColor" opacity="0.55"/>
+</svg>

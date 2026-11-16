@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "My DSH",
+    "description": "One plugin for the adjustments DSH users actually make: interface switches and entry placement, token usage and budgets, context insight, balance and pricing, backups and restore, retry and failover, personalization with long-term memory, capability modules such as MCP and image generation, and relay-based remote access. Every capability is self-contained: install this one plugin, no other plugin required.",
+    "detail": "docs/DETAIL.md"
+  }
+}
