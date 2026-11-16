@@ -172,7 +172,10 @@ test('deepMerge replaces arrays and merges objects', () => {
 })
 
 test('panels and entry keys are the published catalogue', () => {
-  equal(PANEL_IDS.length, 3, 'panel count')
+  // One panel, because one switch adds one icon and the icon addresses the panel
+  // by id. A longer list here would make `meta.panels` describe panels the Client
+  // never registers.
+  equal(PANEL_IDS, ['mydsh-usage'], 'panel ids')
   ok(Object.keys(ENTRY_KEYS).includes('sidebarPanel'), 'sidebarPanel entry')
   ok(Object.keys(ENTRY_KEYS).includes('dockGeekMetrics'), 'dock entry')
 })

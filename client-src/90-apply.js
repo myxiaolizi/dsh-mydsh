@@ -29,30 +29,6 @@ function UsagePanel() {
   )
 }
 
-function BackupPanel() {
-  const settings = useSettings()
-  const meta = useMeta()
-  if (settings === undefined) return h('div', { className: 'mydsh-root mydsh-page' }, h(Empty, null, t().loading))
-  return h(
-    'div',
-    { className: 'mydsh-root mydsh-page', style: { padding: '18px 22px' } },
-    h(Styles),
-    h(BackupTab, { settings, patch: (partial) => settingsStore.patch(partial), meta }),
-  )
-}
-
-function ModulesPanel() {
-  const settings = useSettings()
-  const meta = useMeta()
-  if (settings === undefined) return h('div', { className: 'mydsh-root mydsh-page' }, h(Empty, null, t().loading))
-  return h(
-    'div',
-    { className: 'mydsh-root mydsh-page', style: { padding: '18px 22px' } },
-    h(Styles),
-    h(ModulesTab, { settings, patch: (partial) => settingsStore.patch(partial), meta }),
-  )
-}
-
 /** The sidebar panel icon: a small gauge, drawn with theme tokens. */
 function PanelIcon({ size, active }) {
   const edge = Number(size ?? 20)
@@ -88,9 +64,14 @@ function PanelIcon({ size, active }) {
 function entryPlan(settings) {
   const entries = settings?.ui?.entries ?? {}
   const modules = settings?.modules ?? {}
+  const panelOn = entries.sidebarPanel === true
   return {
     settingsSection: true,
-    sidebarPanel: entries.sidebarPanel === true,
+    // The sidebar icon addresses a `main` panel by its id. Registering the icon
+    // without the panel leaves a button that opens an empty column, so the two
+    // travel together: one switch, two registrations.
+    sidebarPanel: panelOn,
+    sidebarPanelMain: panelOn,
     footerUsage: entries.footerUsage === true,
     tabContext: entries.tabContext === true && modules.contextInsight?.enabled !== false,
     tabTeam: entries.tabTeam === true && modules.teams?.enabled !== false,
@@ -175,7 +156,16 @@ return {
      */
     const entrySpecs = {
       // `settingsSection` is registered below, unconditionally: it is the door back.
-      sidebarPanel: () => ({ slot: 'sidebar.panellist', options: { id: 'mydsh-usage', order: 30, label: t().appTitle }, component: PanelIcon }),
+      sidebarPanel: () => ({
+        slot: 'sidebar.panellist',
+        options: { id: 'mydsh-usage', order: 30, label: t().appTitle },
+        component: PanelIcon,
+      }),
+      sidebarPanelMain: () => ({
+        slot: 'main',
+        options: { key: 'mydsh-usage' },
+        component: UsagePanel,
+      }),
       footerUsage: () => ({ slot: 'sidebar.footer.action', options: { id: `${NS}-usage`, order: 20, label: t().tabUsage }, component: FooterUsage }),
       tabUsage: () => ({ slot: 'conversation.view', options: { id: 'mydsh-usage', order: 40, label: () => t().tabUsage }, component: UsageView }),
       tabContext: () => ({ slot: 'conversation.view', options: { id: 'mydsh-context', order: 20, label: () => (activeLocale() === 'zh' ? '上下文' : 'Context') }, component: ContextView }),

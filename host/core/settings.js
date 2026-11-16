@@ -1,4 +1,4 @@
-﻿/**
+/**
  * dsh-mydsh settings document 鈥?V2.
  *
  * One JSON document under `<DSH_HOME>/dsh-mydsh/settings.json` owns every
@@ -12,8 +12,16 @@
  * hand-edited one 鈥?still yields a complete, in-range value set.
  */
 
-/** Panel ids the Client may register in `sidebar.panellist`. */
-export const PANEL_IDS = Object.freeze(['mydsh-usage', 'mydsh-backup', 'mydsh-modules'])
+/**
+ * Panel ids the Client registers in `sidebar.panellist` and `main`.
+ *
+ * One entry, because one switch adds one icon: the icon addresses the panel by
+ * id, and a list here that names panels nobody registers makes `meta.panels`
+ * describe something that does not exist. Backups and capabilities already have
+ * their own settings tabs, so a second entry point would be a second copy of the
+ * same pages.
+ */
+export const PANEL_IDS = Object.freeze(['mydsh-usage'])
 
 /** Where the plugin's own entries may appear. */
 export const ENTRY_KEYS = Object.freeze({

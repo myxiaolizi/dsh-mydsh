@@ -67,8 +67,6 @@ for (const { kind, re } of patterns) {
 const required = [
   'Page',
   'UsagePanel',
-  'BackupPanel',
-  'ModulesPanel',
   'PanelIcon',
   'NewSessionVeil',
   'Blank',
