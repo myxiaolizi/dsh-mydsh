@@ -822,8 +822,7 @@ await testAsync('apply registers the whole route table and answers every path', 
 
 console.log('\nclient artifact')
 
-await testAsync('the built artifact parses and mounts its entries', async () => {
-  const source = await readFile(join(packageRoot, 'client.js'), 'utf8')
+await testAsync('the built artifact parses and mounts its entries', async () => {  const source = await readFile(join(packageRoot, 'client.js'), 'utf8')
   ok(source.includes("window.__ModuleLoader__.load({"), 'loader call present')
   ok(source.includes("id: 'dsh-mydsh'"), 'factory id')
   ok(!/\bimport\s+[\w{*]/.test(source), 'no import statements')
@@ -924,6 +923,186 @@ await testAsync('the built artifact parses and mounts its entries', async () => 
   for (const [key, Component] of registered) {
     ok(typeof Component === 'function', `${key} is a component`)
     Component({ sessionId: 'demo', wide: true, children: null, size: 20, active: false })
+  }
+})
+
+/**
+ * Every settings tab and every conversation view, under three data conditions.
+ *
+ * The mount check above only renders the entry that exists at load. The page opens
+ * on Overview and the other tabs render only after a click, so a crash in one of
+ * them would reach the user as a blank panel. This drives the real `Page` once per
+ * tab, with a populated payload, an empty payload, and a failing request, because
+ * a settings page that only works when every request succeeds is not usable.
+ */
+await testAsync('every settings tab and conversation view renders with ok, empty and failed data', async () => {
+  const source = await readFile(join(packageRoot, 'client.js'), 'utf8')
+
+  /** The tab `Page` should open, since a harness render cannot click. */
+  let forcedTab
+  const React = {
+    createElement: (type, props, ...children) => ({ type, props, children }),
+    Fragment: 'Fragment',
+    useState: (initial) => {
+      const value = typeof initial === 'function' ? initial() : initial
+      if (forcedTab !== undefined && value === 'overview') return [forcedTab, () => undefined]
+      return [value, () => undefined]
+    },
+    useEffect: () => undefined,
+    useMemo: (factory) => factory(),
+    useRef: (initial) => ({ current: initial }),
+    useCallback: (fn) => fn,
+    useSyncExternalStore: (_subscribe, snapshot) => snapshot(),
+  }
+  const reactDom = { createPortal: (children) => children }
+
+  const settings = defaultSettings()
+  const populated = {
+    '/usage/summary': {
+      totals: { inputTokens: 1200, outputTokens: 340, cacheReadTokens: 900, totalTokens: 1540, requests: 3, failedRequests: 0, turns: 2, durationMs: 4200, cost: 1.23, currency: 'CNY' },
+      series: [{ t: Date.now() - 86400000, label: '昨天', totalTokens: 770, requests: 2 }],
+      dims: { provider: [], model: [{ key: 'deepseek::deepseek-chat', label: 'deepseek-chat', inputTokens: 1200, outputTokens: 340, totalTokens: 1540, requests: 3, cost: 1.23, hitRate: 0.42, sub: [] }], workspace: [], session: [] },
+      dim: 'model', updatedAt: Date.now(), range: '7d', from: 0, to: Date.now(),
+    },
+    '/usage/context': {
+      available: true, sessionId: 'demo', provider: 'deepseek', model: 'deepseek-chat',
+      usedTokens: 24300, windowTokens: 65536, ratio: 0.37,
+      buckets: [{ key: 'system', label: '系统提示词', tokens: 900, ratio: 0.037 }, { key: 'tools', label: '工具定义', tokens: 5200, ratio: 0.21 }],
+      series: [{ t: Date.now() - 600000, label: '1', turn: 1, step: 1, usedTokens: 12000 }],
+      browsers: [{ category: 'system', label: 'system', tokens: 900, count: 1, preview: '…', items: [] }],
+      events: [{ at: Date.now(), seq: 1, category: 'system', description: '系统提示词', tokens: 900, delta: 0, turn: 1 }],
+    },
+    '/teams/state': {
+      enabled: true, sessionId: 'demo', readOnly: true,
+      members: [{ name: 'lead', status: 'running', tokens: 12000, durationMs: 60000, steps: 4, contextRatio: 0.31, summary: '主智能体' }],
+      tasks: [{ id: 't1', subject: '写文档', status: 'in_progress', blockedBy: [], ownerName: 'lead', updatedAt: Date.now(), ready: true }],
+      messages: [{ senderName: 'lead', targetName: 'agent-1', channel: 'default', at: Date.now(), content: [{ type: 'text', text: '开始' }] }],
+      totals: { members: 1, tasks: 1, messages: 1, pending: 1, completed: 0 },
+    },
+    '/usage/geek': { requests: [{ at: Date.now(), sessionId: 'demo', status: 'ok', model: 'deepseek-chat', provider: 'deepseek', ttftMs: 900, durationMs: 3000, inputTokens: 1200, outputTokens: 340, cacheReadTokens: 900, speed: 210, cost: 0.12 }], stream: null, avg: { requests: 1, speed: 210, ttftMs: 900 } },
+    '/usage/sessions': { sessions: [{ id: 'demo', label: 'demo', workspace: 'mydsh', provider: 'deepseek', model: 'deepseek-chat', firstAt: Date.now() - 3600000, lastAt: Date.now(), turns: 2, requests: 3, inputTokens: 1200, outputTokens: 340, cacheReadTokens: 900, totalTokens: 1540, durationMs: 4200, cost: 1.23, hitRate: 0.42 }] },
+    '/usage/budgets': { budgets: [{ id: 'b1', label: '每日', scope: 'global', period: 'day', action: 'notify', enabled: true, limitTokens: 100000, limitCost: 0 }], evaluation: [{ id: 'b1', label: '每日', scope: 'global', period: 'day', state: 'warn', usedTokens: 95000, usedCost: 0, limitTokens: 100000, limitCost: 0, ratio: 0.95 }], over: false },
+    '/usage/prices': { rows: [{ provider: 'deepseek', model: 'deepseek-chat', input: 1.96, output: 7.98, cacheRead: 0.2, cacheWrite: 0, currency: 'CNY', source: 'builtin' }] },
+    '/usage/balance': { deepseek: { id: 'deepseek', label: 'DeepSeek', ok: true, currency: 'CNY', total: 12.3, at: Date.now(), source: 'deepseek' }, providers: [], at: Date.now() },
+    '/backup/state': { running: false, sevenZip: true, runs: [{ id: 'r1', startedAt: Date.now(), finishedAt: Date.now(), type: 'full', ok: true, bytes: 4096, parts: 1 }], targets: [{ id: 'local', kind: 'local', label: '本地', path: 'C:/tmp' }], activeTargetId: 'local', estimate: { bytes: 4096, files: 2, items: [] } },
+    '/backup/runs': { runs: [] },
+    '/retry/state': { enabled: false, events: [], stats: { seen: 0, retried: 0, switched: 0, delegated: 0 } },
+    '/personalize/preview': { text: '## 身份\n- 称呼：老王', tokens: 20, active: true, sections: [] },
+    '/personalize/memory': { entries: [{ id: 'm1', text: '根目录', at: Date.now(), pinned: true, hits: 1 }], total: 1 },
+    '/modules/overview': { modules: [{ key: 'desktop', label: '桌面自动化', enabled: false, available: false, reason: '未启用', risk: 'high', dependsOn: [] }], dataDir: 'C:/tmp' },
+    '/skills/list': { skills: [{ name: 'dsh-doc', description: '文档', source: 'bundled', path: '/x' }] },
+    '/mcp/state': { servers: [] },
+    '/roles/list': { roles: [{ id: 'r1', name: '前端', department: '前端', summary: '排障', prompt: '先确认版本', enabled: true }], departments: ['前端'] },
+    '/desktop/state': { enabled: false, capabilities: {}, screenSize: null },
+    '/relay/state': { state: { status: 'off', publicUrl: '', bytesUp: 0, bytesDown: 0, requests: 0 } },
+    '/config/list': { entries: [] },
+    '/notices': { notices: [] },
+  }
+
+  /** Answer one path for the current scenario. */
+  let scenario = 'ok'
+  const fetchFor = async (url) => {
+    const path = String(url)
+    if (scenario === 'fail') {
+      return { status: 500, text: async () => JSON.stringify({ ok: false, error: { message: '模拟失败' } }) }
+    }
+    if (scenario === 'empty') {
+      return { status: 200, text: async () => JSON.stringify({ ok: true, value: path.includes('/settings') ? { settings, meta: {} } : {} }) }
+    }
+    const clean = path.split('?')[0]
+    let value
+    for (const [suffix, payload] of Object.entries(populated)) {
+      if (clean.endsWith(suffix)) {
+        value = payload
+        break
+      }
+    }
+    if (value === undefined) value = path.includes('/settings') ? { settings, meta: { providers: [], workspaces: [] } } : {}
+    return { status: 200, text: async () => JSON.stringify({ ok: true, value }) }
+  }
+
+  const storage = new Map()
+  const windowStub = {
+    __ModuleLoader__: { load: (definition) => { windowStub.loaded = definition } },
+    localStorage: { getItem: (key) => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, String(value)), removeItem: (key) => storage.delete(key) },
+    addEventListener: () => undefined,
+    removeEventListener: () => undefined,
+    innerWidth: 1440,
+    innerHeight: 900,
+    navigator: { language: 'zh-CN' },
+  }
+  const documentStub = {
+    hidden: false,
+    body: {},
+    addEventListener: () => undefined,
+    removeEventListener: () => undefined,
+    createElement: () => ({ style: {}, setAttribute: () => undefined, appendChild: () => undefined }),
+    head: { appendChild: () => undefined },
+    querySelector: () => null,
+  }
+  const requireFor = (name) => {
+    if (name === 'react') return React
+    if (name === 'react-dom') return reactDom
+    throw new Error(`unexpected require(${name})`)
+  }
+
+  new Function('window', 'document', 'navigator', 'fetch', 'require', source)(windowStub, documentStub, windowStub.navigator, fetchFor, requireFor)
+  const mounted = new Map()
+  const context = {
+    get: (name) => (name === 'locale' ? { getLocale: () => ({ id: 'zh-CN' }) } : undefined),
+    effect: (fn) => {
+      const disposer = fn()
+      return typeof disposer === 'function' ? disposer : () => undefined
+    },
+    on: () => () => undefined,
+    inject: () => undefined,
+    slots: {
+      inject: (_slot, factory) => {
+        const disposer = factory()
+        return () => {
+          if (typeof disposer === 'function') disposer()
+        }
+      },
+      register: (options, component) => {
+        mounted.set(`${options.name}${options.id === undefined ? '' : `#${options.id}`}`, component)
+        return () => mounted.delete(`${options.name}#${options.id}`)
+      },
+    },
+  }
+  windowStub.loaded.factory(requireFor).apply(context)
+  await new Promise((resolve) => setTimeout(resolve, 60))
+
+  const page = mounted.get('settings.section#dsh-mydsh')
+  ok(typeof page === 'function', 'settings page registered')
+  const views = [
+    ['usage view', mounted.get('conversation.view#mydsh-usage')],
+    ['context view', mounted.get('conversation.view#mydsh-context')],
+    ['team view', mounted.get('conversation.view#mydsh-team')],
+  ]
+  for (const [label, Component] of views) ok(typeof Component === 'function', `${label} registered`)
+
+  const tabs = ['overview', 'interface', 'usage', 'backup', 'retry', 'personalize', 'modules', 'relay', 'about']
+  for (const name of ['ok', 'empty', 'fail']) {
+    scenario = name
+    for (const tab of tabs) {
+      forcedTab = tab
+      try {
+        page({})
+        page({})
+      } catch (error) {
+        throw new Error(`the ${tab} tab threw with ${name} data: ${error.message}`)
+      }
+    }
+    forcedTab = undefined
+    for (const [label, Component] of views) {
+      try {
+        Component({ sessionId: 'demo', openView: () => undefined })
+        Component({ sessionId: '', openView: () => undefined })
+        Component({})
+      } catch (error) {
+        throw new Error(`${label} threw with ${name} data: ${error.message}`)
+      }
+    }
   }
 })
 
